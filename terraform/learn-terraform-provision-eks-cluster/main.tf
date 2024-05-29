@@ -111,3 +111,66 @@ module "irsa-ebs-csi" {
   role_policy_arns              = [data.aws_iam_policy.ebs_csi_policy.arn]
   oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
 }
+
+# Security group para la base de datos MySQL en el puerto 3306
+resource "aws_security_group" "mysql_sg" {
+  name        = "mysql-sg"
+  description = "Security group for MySQL database"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Permitir acceso desde cualquier origen, considera restringirlo a las IPs necesarias
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Permitir tráfico saliente a cualquier destino
+  }
+}
+
+# Security group para el backend en el puerto 4000
+resource "aws_security_group" "backend_sg" {
+  name        = "backend-sg"
+  description = "Security group for backend service"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 4000
+    to_port     = 4000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Permitir acceso desde cualquier origen, considera restringirlo a las IPs necesarias
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Permitir tráfico saliente a cualquier destino
+  }
+}
+
+# Security group para el frontend en el puerto 3000
+resource "aws_security_group" "frontend_sg" {
+  name        = "frontend-sg"
+  description = "Security group for frontend service"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Permitir acceso desde cualquier origen, considera restringirlo a las IPs necesarias
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  # Permitir tráfico saliente a cualquier destino
+  }
+}
