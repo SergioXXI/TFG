@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: sergiobarpor/backend:k
+        ports:
+        - containerPort: 4000
+        env:
+        - name: MYSQL_HOST
+          value: "mysql-service"
+        - name: MYSQL_USER
+          value: "root"
+        - name: MYSQL_PASSWORD
+          value: "root_password"
+        - name: MYSQL_DATABASE
+          value: "prueba"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+  - protocol: TCP
+    port: 4000
+    targetPort: 4000
+  type: NodePort # Cambia ClusterIP a NodePort si necesitas acceso externo
