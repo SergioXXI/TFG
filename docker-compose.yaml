@@ -2,21 +2,28 @@ version: '3.7'
 
 services:
   frontend:
-    build: ./front-end/pagina_react
-    #image: sergiobarpor/frontend:lastest
+    #build: ./front-end/pagina_react
+    image: sergiobarpor/frontend:lastest_prueba
     ports:
       - "3000:3000"
     depends_on:
       - backend
+    networks:
+      - app-network
+
+    environment:
+      - BACKEND_URL=http://backend:4000
 
   backend:
     restart: always
-    build: ./back_end/bd
-    #image: sergiobarpor/backend:lastest
+    #build: ./back_end/bd  
+    image: sergiobarpor/backend:lastest
     ports:
       - "4000:4000"
     depends_on:
       - database
+    networks:
+      - app-network
 
   database:
     image: mysql:5.7
@@ -31,3 +38,8 @@ services:
       - "3306:3306"
     volumes:
       - ./db:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
